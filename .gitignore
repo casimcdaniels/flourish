@@ -3,3 +3,6 @@
 
 # Godep vendor
 vendor/
+
+# App Environment File
+.env

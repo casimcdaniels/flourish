@@ -1,6 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"os"
+	"log"
+	"github.com/alexsasharegan/dotenv"
+	"github.com/jmoiron/sqlx"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+
+)
 
 /*************************************************************
 
@@ -38,6 +46,57 @@ import "fmt"
 
 **********************************************************/
 
+
 func main () {
-	fmt.Println("Hello, world!")
+	rootPath, err := os.Getwd()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg, err := loadCfg(rootPath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = setupDB(cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbSchema)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Application Config
+
+type config struct {
+	DbHost string
+	DbPort string
+	DbUser string
+	DbPassword string
+	DbSchema string
+}
+
+// Loads the config from .env file
+func loadCfg (path string) (config, error){
+	err := dotenv.Load(path + "/.env")
+
+	if err != nil {
+		return config{}, err
+	}
+
+
+	return config{
+		DbHost: os.Getenv("FLOURISH_DB_HOST"),
+		DbPort: os.Getenv("FLOURISH_DB_PORT"),
+		DbUser: os.Getenv("FLOURISH_DB_USER"),
+		DbPassword: os.Getenv("FLOURISH_DB_PASSWORD"),
+		DbSchema: os.Getenv("FLOURISH_DB_SCHEMA"),
+	}, nil
+}
+
+// Initializes a sql connection pool using MySQL driver
+func setupDB(host, port, user, password, schema string) (*sqlx.DB, error) {
+	url := fmt.Sprintf("%s:%s@(%s:%s)/%s", user, password, host, port, schema)
+	return sqlx.Connect("mysql", url)
 }
