@@ -69,12 +69,13 @@ func main () {
 		log.Fatal(err)
 	}
 
+	strainService := flourish.StrainService{}
 	router := mux.NewRouter()
 
-	router.HandleFunc("/strains", flourish.CreateStrainEndpoint).Methods("POST")
-	router.HandleFunc("/strains", flourish.UpdateStrainEndpoint).Methods("PATCH")
-	router.HandleFunc("/strains", flourish.DeleteStrainEndpoint).Methods("DELETE")
-	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint).Methods("GET")
+	router.HandleFunc("/strains", flourish.CreateStrainEndpoint(strainService)).Methods("POST")
+	router.HandleFunc("/strains", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
+	router.HandleFunc("/strains", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
+	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint(strainService)).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8888", router))
 }

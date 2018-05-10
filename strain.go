@@ -18,7 +18,8 @@ type StrainSearchOptions struct {}
 
 type StrainRepository interface {
 	Create(*Strain) (error)
-	Update(*Strain) error
+	Save(*Strain) error
 	Delete(id uint64) error
 	Search(options StrainSearchOptions) ([]*Strain, error)
+	Get(id uint64) (*Strain, error)
 }

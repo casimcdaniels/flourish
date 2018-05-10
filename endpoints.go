@@ -1,8 +1,87 @@
 package flourish
 
-import "net/http"
+import (
+	"net/http"
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"strconv"
+)
 
-func CreateStrainEndpoint(w http.ResponseWriter, r *http.Request) {}
-func DeleteStrainEndpoint(w http.ResponseWriter, r *http.Request) {}
-func UpdateStrainEndpoint(w http.ResponseWriter, r *http.Request) {}
-func SearchStrainsEndpoint(w http.ResponseWriter, r *http.Request) {}
+type createStrainRequest struct {
+	Race    string        `json:"race"`
+	Flavors []string      `json:"flavors"`
+	Effects StrainEffects `json:"effects"`
+}
+
+func CreateStrainEndpoint(service StrainService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req createStrainRequest
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&req)
+
+		if err != nil {
+			return
+		}
+
+		strain, err := service.Create(req.Race, req.Flavors, req.Effects)
+
+		response, err := json.Marshal(strain)
+		if err != nil {
+			return
+		}
+
+		w.Write(response)
+	}
+}
+
+func DeleteStrainEndpoint(service StrainService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		reqId := vars["id"]
+		id, err := strconv.ParseUint(reqId, 10, 64)
+
+		if err != nil {
+			return
+		}
+
+		err = service.Remove(id)
+		if err != nil {
+			return
+		}
+	}
+}
+
+type updateStrainRequest struct {
+	Race    *string        `json:"race"`
+	Flavors *[]string      `json:"flavors"`
+	Effects *StrainEffects `json:"effects"`
+}
+
+func UpdateStrainEndpoint(service StrainService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req updateStrainRequest
+
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&req)
+
+		vars := mux.Vars(r)
+		reqId := vars["id"]
+		id, err := strconv.ParseUint(reqId, 10, 64)
+
+		if err != nil {
+			return
+		}
+
+
+		err = service.Update(id, req.Race, req.Flavors, req.Effects)
+
+		if err != nil {
+			return
+		}
+
+	}
+}
+
+func SearchStrainsEndpoint(service StrainService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {}
+}
