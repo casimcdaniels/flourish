@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"os"
@@ -7,7 +7,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
 
+	"net/http"
+	"github.com/casimcdaniels/flourish"
 )
 
 /*************************************************************
@@ -65,6 +68,15 @@ func main () {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/strains", flourish.CreateStrainEndpoint).Methods("POST")
+	router.HandleFunc("/strains", flourish.UpdateStrainEndpoint).Methods("PATCH")
+	router.HandleFunc("/strains", flourish.DeleteStrainEndpoint).Methods("DELETE")
+	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":8888", router))
 }
 
 // Application Config
