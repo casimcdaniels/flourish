@@ -114,10 +114,17 @@ func SearchStrainsEndpoint(service StrainService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		raceFilter := r.URL.Query().Get("race")
 		nameFilter := r.URL.Query().Get("name")
-		effectFilter := r.URL.Query().Get("filters")
+		effectFilter := r.URL.Query().Get("effect")
+		treatmentFilter := r.URL.Query().Get("treatment")
 		flavorFilter := r.URL.Query().Get("flavor")
 
-		strains, err := service.Search(StrainSearchOptions{Name: nameFilter, Race: raceFilter, Effect: effectFilter, Flavor: flavorFilter})
+		strains, err := service.Search(StrainSearchOptions{
+			Name: nameFilter,
+			Race: raceFilter,
+			Effect: effectFilter,
+			Flavor: flavorFilter,
+			Treatment: treatmentFilter,
+		})
 
 		if err != nil {
 			return

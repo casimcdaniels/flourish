@@ -151,7 +151,7 @@ func (r MysqlStrainRepository) Delete(id uint64) error {
 
 // Fetches records within the strains table based upon the provided optios
 func (r MysqlStrainRepository) Search(options StrainSearchOptions) ([]*Strain, error) {
-	q := squirrel.Select("*").From("strains")
+	q := squirrel.Select("strains.id", "strains.name").From("strains")
 
 
 	if options.Name != "" {
@@ -160,6 +160,18 @@ func (r MysqlStrainRepository) Search(options StrainSearchOptions) ([]*Strain, e
 
 	if options.Race != "" {
 		q = q.Where(squirrel.Eq{"race": options.Race })
+	}
+
+	if options.Flavor != "" {
+		q = q.Join("strain_flavors ON strains.id = strain_flavors.strain_id").Join("flavors ON flavors.id = strain_flavors.flavor_id AND flavors.name = ?", options.Flavor)
+	}
+
+	if options.Effect != "" {
+		q = q.Join("strain_effects effect ON strains.id = effect.strain_id").Join("effects e ON effect.effect_id = e.id AND e.name = ?", options.Effect)
+	}
+
+	if options.Treatment != "" {
+		q = q.Join("treatments t ON strains.id = t.strain_id").Join("symptoms s ON t.symptom_id = s.id AND s.name = ?", options.Treatment)
 	}
 
 	s, args, err := q.ToSql()

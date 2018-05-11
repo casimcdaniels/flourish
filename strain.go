@@ -20,6 +20,7 @@ type StrainSearchOptions struct{
 	Race string
 	Flavor string
 	Effect string
+	Treatment string
 }
 
 type StrainRepository interface {
