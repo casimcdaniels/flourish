@@ -8,6 +8,7 @@ import (
 )
 
 type createStrainRequest struct {
+	Name    string        `json:"name"`
 	Race    string        `json:"race"`
 	Flavors []string      `json:"flavors"`
 	Effects StrainEffects `json:"effects"`
@@ -23,7 +24,7 @@ func CreateStrainEndpoint(service StrainService) http.HandlerFunc {
 			return
 		}
 
-		strain, err := service.Create(req.Race, req.Flavors, req.Effects)
+		strain, err := service.Create(req.Name, req.Race, req.Flavors, req.Effects)
 
 		response, err := json.Marshal(strain)
 		if err != nil {
@@ -52,6 +53,7 @@ func DeleteStrainEndpoint(service StrainService) http.HandlerFunc {
 }
 
 type updateStrainRequest struct {
+	Name    *string        `json:"name"`
 	Race    *string        `json:"race"`
 	Flavors *[]string      `json:"flavors"`
 	Effects *StrainEffects `json:"effects"`
@@ -72,8 +74,7 @@ func UpdateStrainEndpoint(service StrainService) http.HandlerFunc {
 			return
 		}
 
-
-		err = service.Update(id, req.Race, req.Flavors, req.Effects)
+		err = service.Update(id, req.Name, req.Race, req.Flavors, req.Effects)
 
 		if err != nil {
 			return

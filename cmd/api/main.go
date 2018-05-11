@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"os"
@@ -63,13 +63,14 @@ func main () {
 		log.Fatal(err)
 	}
 
-	_, err = setupDB(cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbSchema)
+	db, err := setupDB(cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbSchema)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	strainService := flourish.StrainService{}
+	strainRepo := flourish.MysqlStrainRepository{DB: db}
+	strainService := flourish.StrainService{Strains: strainRepo}
 	router := mux.NewRouter()
 
 	router.HandleFunc("/strains", flourish.CreateStrainEndpoint(strainService)).Methods("POST")
