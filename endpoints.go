@@ -7,7 +7,6 @@ import (
 	"strconv"
 )
 
-
 func GetStrainEndpoint(service StrainService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -33,6 +32,7 @@ func GetStrainEndpoint(service StrainService) http.HandlerFunc {
 		w.Write(b)
 	}
 }
+
 type createStrainRequest struct {
 	Name    string        `json:"name"`
 	Race    string        `json:"race"`
@@ -109,6 +109,40 @@ func UpdateStrainEndpoint(service StrainService) http.HandlerFunc {
 	}
 }
 
+
 func SearchStrainsEndpoint(service StrainService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	return func(w http.ResponseWriter, r *http.Request) {
+		raceFilter := r.URL.Query().Get("race")
+		nameFilter := r.URL.Query().Get("name")
+		effectFilter := r.URL.Query().Get("filters")
+		flavorFilter := r.URL.Query().Get("flavor")
+
+		strains, err := service.Search(StrainSearchOptions{Name: nameFilter, Race: raceFilter, Effect: effectFilter, Flavor: flavorFilter})
+
+		if err != nil {
+			return
+		}
+
+		responseStrains := make([]struct{
+			Id uint64 `json:"id"`
+			Name string `json:"name"`
+		}, len(strains))
+
+		for i, strain := range strains {
+			responseStrains[i] = struct{
+				Id uint64 `json:"id"`
+				Name string `json:"name"`
+			}{
+				strain.Id,
+				strain.Name,
+			}
+		}
+
+		response, err := json.Marshal(responseStrains)
+		if err != nil {
+			return
+		}
+
+		w.Write(response)
+	}
 }

@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/Masterminds/squirrel"
+  packages = ["."]
+  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/alexsasharegan/dotenv"
   packages = ["."]
@@ -34,9 +40,21 @@
   ]
   revision = "2aeb6a910c2b94f2d5eb53d9895d80e27264ec41"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/lann/builder"
+  packages = ["."]
+  revision = "1b87b36280d04fe7882d1512bf038ea2967ad534"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lann/ps"
+  packages = ["."]
+  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f1ba9e8c87a41b79efa4de60efb37268ba5fbfeb446b66f88fd3b62bc435dc87"
+  inputs-digest = "57539ba82ffcf796e28e5e889da50f0700900cd8ee694bbd7f8e3c7721375538"
   solver-name = "gps-cdcl"
   solver-version = 1

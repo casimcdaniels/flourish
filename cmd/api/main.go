@@ -69,12 +69,12 @@ func main () {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/strains", flourish.CreateStrainEndpoint(strainService)).Methods("POST")
-	router.HandleFunc("/strains/{id}", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
-	router.HandleFunc("/strains/{id}", flourish.GetStrainEndpoint(strainService)).Methods("GET")
-	router.HandleFunc("/strains/{id}", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
+	router.HandleFunc("/strains/{id:[0-9]+}", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
+	router.HandleFunc("/strains/{id:[0-9]+}", flourish.GetStrainEndpoint(strainService)).Methods("GET")
+	router.HandleFunc("/strains/{id:[0-9]+}", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
 	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint(strainService)).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8888", router))
+	log.Fatal(http.ListenAndServe(":8888", contentType(router)))
 }
 
 // Application Config
@@ -109,4 +109,11 @@ func loadCfg (path string) (config, error){
 func setupDB(host, port, user, password, schema string) (*sqlx.DB, error) {
 	url := fmt.Sprintf("%s:%s@(%s:%s)/%s", user, password, host, port, schema)
 	return sqlx.Connect("mysql", url)
+}
+
+func contentType(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	}
 }

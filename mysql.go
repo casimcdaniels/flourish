@@ -1,13 +1,16 @@
 package flourish
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/Masterminds/squirrel"
+)
 
 type MysqlStrainRepository struct {
 	DB *sqlx.DB
 }
 
 func (r MysqlStrainRepository) Create(s *Strain) (error) {
-	tx, err  := r.DB.Begin()
+	tx, err := r.DB.Begin()
 
 	if err != nil {
 		return err
@@ -67,13 +70,12 @@ func (r MysqlStrainRepository) Create(s *Strain) (error) {
 		}
 	}
 
-
 	err = tx.Commit()
 	return nil
 }
 
 func (r MysqlStrainRepository) Save(s *Strain) error {
-	tx, err  := r.DB.Begin()
+	tx, err := r.DB.Begin()
 
 	if err != nil {
 		return err
@@ -98,7 +100,7 @@ func (r MysqlStrainRepository) Save(s *Strain) error {
 	tx.Exec("DELETE FROM strain_flavors WHERE strain_id = ?", s.Id)
 	tx.Exec("DELETE FROM treatments WHERE strain_id = ?", s.Id)
 
-	if err !=  nil {
+	if err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -149,9 +151,32 @@ func (r MysqlStrainRepository) Delete(id uint64) error {
 
 // Fetches records within the strains table based upon the provided optios
 func (r MysqlStrainRepository) Search(options StrainSearchOptions) ([]*Strain, error) {
-	panic("implement me")
-}
+	q := squirrel.Select("*").From("strains")
 
+
+	if options.Name != "" {
+		q = q.Where(squirrel.Eq{"name": options.Name})
+	}
+
+	if options.Race != "" {
+		q = q.Where(squirrel.Eq{"race": options.Race })
+	}
+
+	s, args, err := q.ToSql()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var strains []*Strain
+	err = r.DB.Select(&strains, s, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return strains, nil
+}
 
 // Fetches the strain from the repository and builds the strain object from associations
 func (r MysqlStrainRepository) Get(id uint64) (*Strain, error) {
@@ -191,12 +216,10 @@ func (r MysqlStrainRepository) Get(id uint64) (*Strain, error) {
 	effects := StrainEffects{
 		Positive: positiveEffects,
 		Negative: negativeEffects,
-		Medical: medicalTreatments,
+		Medical:  medicalTreatments,
 	}
 
 	strain.Flavors = flavors
 	strain.Effects = effects
 	return &strain, nil
-
-
 }

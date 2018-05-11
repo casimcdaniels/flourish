@@ -15,7 +15,12 @@ type StrainEffects struct {
 }
 
 // StrainFilter
-type StrainSearchOptions struct{}
+type StrainSearchOptions struct{
+	Name string
+	Race string
+	Flavor string
+	Effect string
+}
 
 type StrainRepository interface {
 	Create(*Strain) (error)
