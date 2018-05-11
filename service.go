@@ -47,6 +47,7 @@ func (s StrainService) Update(id uint64, name *string, race *string, flavors *[]
 	}
 
 	err = s.Strains.Save(strain)
+
 	if err != nil {
 		return err
 	}

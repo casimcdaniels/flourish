@@ -69,7 +69,8 @@ func main () {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/strains", flourish.CreateStrainEndpoint(strainService)).Methods("POST")
-	router.HandleFunc("/strains", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
+	router.HandleFunc("/strains/{id}", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
+	router.HandleFunc("/strains/{id}", flourish.GetStrainEndpoint(strainService)).Methods("GET")
 	router.HandleFunc("/strains/{id}", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
 	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint(strainService)).Methods("GET")
 

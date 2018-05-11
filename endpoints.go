@@ -7,6 +7,32 @@ import (
 	"strconv"
 )
 
+
+func GetStrainEndpoint(service StrainService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		reqId := vars["id"]
+		id, err := strconv.ParseUint(reqId, 10, 64)
+
+		if err != nil {
+			return
+		}
+
+		strain, err := service.Get(id)
+
+		if err != nil {
+			return
+		}
+
+		b, err := json.Marshal(strain)
+
+		if err != nil {
+			return
+		}
+
+		w.Write(b)
+	}
+}
 type createStrainRequest struct {
 	Name    string        `json:"name"`
 	Race    string        `json:"race"`

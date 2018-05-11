@@ -1,9 +1,9 @@
 package flourish
 
 type Strain struct {
-	Id      uint64 `json:"id"`
-	Name    string `json:"name"`
-	Race    string `json:"race"`
+	Id      uint64 `db:"id" json:"id"`
+	Name    string `db:"name" json:"name"`
+	Race    string `db:"race" json:"race"`
 	Flavors []string
 	Effects StrainEffects
 }
