@@ -70,7 +70,7 @@ func main () {
 
 	router.HandleFunc("/strains", flourish.CreateStrainEndpoint(strainService)).Methods("POST")
 	router.HandleFunc("/strains", flourish.UpdateStrainEndpoint(strainService)).Methods("PATCH")
-	router.HandleFunc("/strains", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
+	router.HandleFunc("/strains/{id}", flourish.DeleteStrainEndpoint(strainService)).Methods("DELETE")
 	router.HandleFunc("/strains/search", flourish.SearchStrainsEndpoint(strainService)).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8888", router))

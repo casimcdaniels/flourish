@@ -77,7 +77,8 @@ func (r MysqlStrainRepository) Save(*Strain) error {
 }
 
 func (r MysqlStrainRepository) Delete(id uint64) error {
-	panic("implement me")
+	_, err := r.DB.Exec("DELETE FROM strains WHERE id = ?", id)
+	return err
 }
 
 func (r MysqlStrainRepository) Search(options StrainSearchOptions) ([]*Strain, error) {
